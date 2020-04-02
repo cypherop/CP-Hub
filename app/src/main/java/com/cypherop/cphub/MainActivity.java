@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -37,9 +39,15 @@ import static android.net.wifi.WifiEnterpriseConfig.Phase2.NONE;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    /* TODO:  1. OnClick open link
+       TODO:  2. Reminder
+       TODO:  3. Photo
+     */
     RequestQueue queue;
     String url = "https://clist.by/api/v1/contest/?username=cypherop&api_key=23a28ffa7d4ae6f7d92e14e8420463c43a01cef5";
     NavigationView navigationView;
+    public static JSONArray contests;
+    public static int id = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +60,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                new fetch_data().execute();
             }
         });
 
@@ -79,27 +86,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
 
 
@@ -109,7 +95,14 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-
+        this.id = id;
+        Log.d("id",String.valueOf(id));
+        Fragment selectedFrag;
+        selectedFrag = new Contests();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.showfragement, selectedFrag);
+        transaction.commit();
+        transaction.addToBackStack(null);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -131,14 +124,16 @@ public class MainActivity extends AppCompatActivity
 
                         @Override
                         public void onResponse(JSONObject response) {
-                            Log.v("API response: ",response.toString());
+                            Log.d("API response: ",response.toString());
                             try {
                                 JSONArray contests = response.getJSONArray("objects");
+                                MainActivity.contests = contests;
                                 int[] done = new int[500];
                                 for (int i=0; i<500; i++) {
                                     done[i] = 0;
                                 }
                                 final Menu menu = navigationView.getMenu();
+                                menu.add(NONE,-1,NONE,"All");
                                 for (int i = 0; i < contests.length(); i++) {
                                     JSONObject contest = contests.getJSONObject(i);
                                     JSONObject resource = contest.getJSONObject("resource");
@@ -150,6 +145,9 @@ public class MainActivity extends AppCompatActivity
                                     menu.add(NONE,ID,NONE,name);
                                     done[ID] = 1;
                                 }
+                                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                                transaction.replace(R.id.showfragement, new Contests());
+                                transaction.commit();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
