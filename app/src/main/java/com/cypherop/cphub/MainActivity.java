@@ -39,9 +39,9 @@ import static android.net.wifi.WifiEnterpriseConfig.Phase2.NONE;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    /* TODO:  1. OnClick open link
-       TODO:  2. Reminder
-       TODO:  3. Photo
+    /*
+       TODO:  1. Reminder
+       TODO:  2. Photo
      */
     RequestQueue queue;
     String url = "https://clist.by/api/v1/contest/?username=cypherop&api_key=23a28ffa7d4ae6f7d92e14e8420463c43a01cef5";

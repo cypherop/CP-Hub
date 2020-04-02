@@ -24,6 +24,11 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
     ArrayList<String> starttime = new ArrayList<>();
     ArrayList<String> endtime = new ArrayList<>();
     ArrayList<String> duration = new ArrayList<>();
+    ArrayList<String> href = new ArrayList<>();
+
+    public ArrayList<String> getHref(){
+        return href;
+    }
 
 
     public ContestRecyclerAdapter(Context context, int id) throws JSONException {
@@ -47,6 +52,7 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
                 duration_item = contest.getString("duration");
                 head_item = contest.getString("event");
                 href_item = contest.getString("href");
+                href.add(href_item);
                 head.add(head_item);
                 starttime.add(start_item);
                 endtime.add(end_item);
@@ -72,6 +78,7 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
                     head_item = contest.getString("event");
                     href_item = contest.getString("href");
                     head.add(head_item);
+                    href.add(href_item);
                     starttime.add(start_item);
                     endtime.add(end_item);
                     duration.add(duration_item);
@@ -95,6 +102,7 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
         holder.head.setText(head.get(position));
         holder.start.setText(starttime.get(position));
         holder.end.setText(endtime.get(position));
+        holder.href = href.get(position);
         Log.d("headText",head.get(position));
 
     }
@@ -106,9 +114,12 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
         return starttime.size();
     }
 
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
         TextView start,end,head;
+        String href;
+
 
 
         public ViewHolder(View itemView) {
