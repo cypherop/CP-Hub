@@ -2,6 +2,7 @@ package com.cypherop.cphub;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -34,6 +35,8 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
     ArrayList<String> href = new ArrayList<>();
     ArrayList<String> eDateArray = new ArrayList<>();
     ArrayList<String> sDateArray = new ArrayList<>();
+    ArrayList<String> resID = new ArrayList<>();
+    ArrayList<String> name = new ArrayList<>();
 
     public ArrayList<String> getHref(){
         return href;
@@ -43,14 +46,16 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
     public ContestRecyclerAdapter(Context context, int id) throws JSONException {
         this.context = context;
         this.id = id;
-        String start_item, end_item, duration_item, head_item, href_item;
+        String start_item, end_item, duration_item, head_item, href_item, name_item;
         if(id==-1){
             for(int i=0; i < MainActivity.contests.length(); ++i){
                 JSONObject contest = MainActivity.contests.getJSONObject(i);
                 JSONObject resource = contest.getJSONObject("resource");
                 int ID = resource.getInt("id");
+                resID.add(String.valueOf(ID));
                 Log.d("ContestRecyclerAdapter",contest.toString());
-
+                name_item = resource.getString("name");
+                name.add(name_item);
                 Log.d("ContestRecyclerAdapter2",contest.toString());
                 start_item = contest.getString("start");
                 sDateArray.add(start_item);
@@ -76,8 +81,12 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
                 JSONObject contest = MainActivity.contests.getJSONObject(i);
                 JSONObject resource = contest.getJSONObject("resource");
                 int ID = resource.getInt("id");
+
                 Log.d("ContestRecyclerAdapter", contest.toString());
                 if (ID == id) {
+                    resID.add(String.valueOf(ID));
+                    name_item = resource.getString("name");
+                    name.add(name_item);
                     Log.d("ContestRecyclerAdapter2", contest.toString());
                     start_item = contest.getString("start");
                     sDateArray.add(start_item);
@@ -116,8 +125,21 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
         holder.start.setText(starttime.get(position));
         holder.end.setText(endtime.get(position));
         holder.href = href.get(position);
+        holder.name.setText(name.get(position));
         holder.sDate = sDateArray.get(position);
         holder.eDate = eDateArray.get(position);
+        try {
+            String uri = "@drawable/a" + resID.get(position);
+            int imageResource = context.getResources().getIdentifier(uri, null, "com.cypherop.cphub");
+            Drawable res = context.getResources().getDrawable(imageResource);
+            holder.image.setImageDrawable(res);
+        }
+        catch (Exception e){
+            String uri = "@drawable/ablack";
+            int imageResource = context.getResources().getIdentifier(uri, null, "com.cypherop.cphub");
+            Drawable res = context.getResources().getDrawable(imageResource);
+            holder.image.setImageDrawable(res);
+        }
         Log.d("headText",head.get(position));
 
     }
@@ -132,7 +154,7 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image,reminder;
-        TextView start,end,head;
+        TextView start,end,head,name;
         String href;
         String sDate,eDate;
 
@@ -140,6 +162,7 @@ public class ContestRecyclerAdapter extends RecyclerView.Adapter<ContestRecycler
         public ViewHolder(View itemView) {
             super(itemView);
 
+            name = itemView.findViewById(R.id.name);
             image = itemView.findViewById(R.id.image);
             head = itemView.findViewById(R.id.head);
             start = itemView.findViewById(R.id.start);
